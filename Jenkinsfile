@@ -23,15 +23,14 @@ pipeline {
 	stage('Release Jar to Jfrog') {
       steps {
 	    echo "~~~~~~~Cutting a release in git as well as in Jfrog~~~~~~~~~"
-		bat 'cd "C:\Windows\System32\config\systemprofile\AppData\Local\Jenkins\.jenkins\workspace\MuleSoft_DevOps"'
-		bat 'mvn release:clean release:prepare release:perform -DskipStaging=true'
+		//bat 'mvn release:clean release:prepare release:perform -DskipStaging=true'
       }
     }
 	
 	stage('Download Jar from Jfrog') {
       steps {
 	    echo "~~~~~~~Copying Jar From Jfrog~~~~~~~~~"
-        bat 'mvn dependency:copy -Dartifact="com.mycompany:cicd-demo-project:1.0.11:jar:mule-application" -DoutputDirectory="C:\\Users\\Administrator\\Desktop\\Jar"'
+        bat 'mvn dependency:copy -Dartifact="com.mycompany:ci-cd-jenkins-mule:1.0.0:jar:mule-application" -DoutputDirectory="C:\\Users\\Administrator\\Desktop\\Jar"'
       }
     }
 	stage('Deploying To Production') {
