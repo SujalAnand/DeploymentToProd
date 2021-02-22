@@ -35,14 +35,14 @@ pipeline {
     }
 	stage('Deploying To Production') {
 	environment {
-        USER_CREDENTIALS = credentials('AnypointExchangeID')
+            USER_CREDENTIALS = credentials('AnypointExchangeID')
        // muleEnv = "${env.cloudhub_env.toLowerCase()}"
       }
       steps {
 	    echo "~~~~~~~Deployment to Production Environment~~~~~~~~~"
-        bat 'anypoint-cli --username=%USER_CREDENTIALS_USR% --password=%USER_CREDENTIALS_PSW% runtime-mgr cloudhub-application deploy --environment "Prod" --runtime "4.3.0" --workers "1" --workerSize "0.1" --region "us-east-1" "Prod-ci-cd-demo-project" "cicd-demo-project-1.0.11-mule-application.jar" --property "mule.env:prod"'
-		echo "~~~~~~~Describing the status Of API Deployed~~~~~~~~~"
-        bat 'anypoint-cli --username=%USER_CREDENTIALS_USR% --password=%USER_CREDENTIALS_PSW% runtime-mgr cloudhub-application describe --environment "Prod" Prod-cicd-demo-project'
+            bat '"C:\\Users\\Administrator\\AppData\\Roaming\\npm\\"anypoint-cli --username=%USER_CREDENTIALS_USR% --password=%USER_CREDENTIALS_PSW% runtime-mgr cloudhub-application deploy --environment "Sandbox" --runtime "4.3.0" --workers "1" --workerSize "0.1" --region "us-east-1" "Prod-ci-cd-demo-project" "C:\\Users\\Administrator\\Desktop\\Jar\\ci-cd-jenkins-mule-1.0.0-mule-application.jar" --property "mule.env:dev"'
+	    echo "~~~~~~~Describing the status Of API Deployed~~~~~~~~~"
+            bat '"C:\\Users\\Administrator\\AppData\\Roaming\\npm\\"anypoint-cli --username=%USER_CREDENTIALS_USR% --password=%USER_CREDENTIALS_PSW% runtime-mgr cloudhub-application describe --environment "Sandbox" Prod-ci-cd-demo-project'
 	  }
     }
   }
