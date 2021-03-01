@@ -1,49 +1,65 @@
 pipeline {
   agent any
-  tools { 
-        maven 'maven-3.6.3'
-        jdk 'jdk8' 
+  tools {
+    maven 'maven-3.6.3'
+    jdk 'jdk8'
+  }
+  environment {
+    USER_CREDENTIALS = credentials('AnypointExchangeID')
+    version = "${env.API_Version}"
+    env = "${env.Environment}"
+    muleVersion = "${env.Mule_Runtime}"
+    workers = "${env.CloudHub_Workers}"
+    wSize = "${env.Worker_Size}"
+    region = "${env.CloudHub_Region}"
+    muleEnv = "${env.Cloudhub_Env.toLowerCase()}"
   }
   stages {
-    stage ('Initialize') {
-            steps {
-                bat '''
-                    echo "PATH = ${PATH}"
-                    echo "M2_HOME = ${M2_HOME}"
-                ''' 
-       }
-    }
-    stage('Regression Testing') {
+    stage('Initialize') {
       steps {
-	    echo "~~~~~~~Running Postman Scripts~~~~~~~~~"
-        bat '"C:\\Users\\Administrator\\AppData\\Roaming\\npm\\"newman run "C:\\Users\\Administrator\\Desktop\\Postman_Collection\\CI-CD-GetFlights-Jenkins.postman_collection.json"  -r htmlextra --reporter-htmlextra-export "C:\\Users\\Administrator\\Desktop\\Postman_Collection" --reporter-htmlextra-darkTheme'
+        bat ''
+        '
+        echo % PATH %
+          echo % M2_HOME %
+          ''
+        ' 
       }
     }
-	
-	stage('Release Jar to Jfrog') {
+
+    stage('Download Jar from Jfrog') {
       steps {
-	    echo "~~~~~~~Cutting a release in git as well as in Jfrog~~~~~~~~~"
-		//bat 'mvn release:clean release:prepare release:perform -DskipStaging=true'
+        echo "~~~~~~~Copying Jar From Jfrog~~~~~~~~~"
+        bat 'mvn dependency:copy -Dartifact="com.mycompany:ci-cd-jenkins-mule:%version%:jar:mule-application" -DoutputDirectory="C:\\Users\\Administrator\\Desktop\\Jar"'
+      }
+
+      post {
+        success {
+          echo "...Download from Artifactory Succeeded for ${env.BUILD_VERSION}: ${currentBuild.currentResult}"
+        }
+        failure {
+          echo "...Download from Artifactory Failed for ${env.BUILD_VERSION}: ${currentBuild.currentResult}"
+        }
+      }
+
+    }
+
+    stage('Deploying To Production') {
+      steps {
+        echo "~~~~~~~Deployment to Production Environment~~~~~~~~~"
+        bat '"C:\\Users\\Administrator\\AppData\\Roaming\\npm\\"anypoint-cli --username=%USER_CREDENTIALS_USR% --password=%USER_CREDENTIALS_PSW% runtime-mgr cloudhub-application deploy --environment "%env%" --runtime "%muleVersion%" --workers "%workers%" --workerSize "%wSize%" --region "%region%" "Prod-ci-cd-demo-project" "C:\\Users\\Administrator\\Desktop\\Jar\\ci-cd-jenkins-mule-%version%-mule-application.jar" --property "mule.env:%muleEnv%"'
+        echo "~~~~~~~Describing the status Of API Deployed~~~~~~~~~"
+        bat '"C:\\Users\\Administrator\\AppData\\Roaming\\npm\\"anypoint-cli --username=%USER_CREDENTIALS_USR% --password=%USER_CREDENTIALS_PSW% runtime-mgr cloudhub-application describe --environment "%env%" Prod-ci-cd-demo-project'
+      }
+
+      post {
+        success {
+          echo "...Successfully Deploying to Anypoint Platform"
+        }
+        failure {
+          echo "...Failed to deploy to Anypoint Platform"
+        }
       }
     }
-	
-	stage('Download Jar from Jfrog') {
-      steps {
-	    echo "~~~~~~~Copying Jar From Jfrog~~~~~~~~~"
-        bat 'mvn dependency:copy -Dartifact="com.mycompany:ci-cd-jenkins-mule:1.0.0:jar:mule-application" -DoutputDirectory="C:\\Users\\Administrator\\Desktop\\Jar"'
-      }
-    }
-	stage('Deploying To Production') {
-	environment {
-        USER_CREDENTIALS = credentials('AnypointExchangeID')
-       // muleEnv = "${env.cloudhub_env.toLowerCase()}"
-      }
-      steps {
-	    echo "~~~~~~~Deployment to Production Environment~~~~~~~~~"
-        bat 'anypoint-cli --username=%USER_CREDENTIALS_USR% --password=%USER_CREDENTIALS_PSW% runtime-mgr cloudhub-application deploy --environment "Prod" --runtime "4.3.0" --workers "1" --workerSize "0.1" --region "us-east-1" "Prod-ci-cd-demo-project" "cicd-demo-project-1.0.11-mule-application.jar" --property "mule.env:prod"'
-		echo "~~~~~~~Describing the status Of API Deployed~~~~~~~~~"
-        bat 'anypoint-cli --username=%USER_CREDENTIALS_USR% --password=%USER_CREDENTIALS_PSW% runtime-mgr cloudhub-application describe --environment "Prod" Prod-cicd-demo-project'
-	  }
-    }
+
   }
 }
