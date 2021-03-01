@@ -7,7 +7,7 @@ pipeline {
   environment {
     USER_CREDENTIALS = credentials('AnypointExchangeID')
     version = "${API_Version}"
-    platform_env = "${Environment}"
+    platform_env = "${platform_Environment}"
     muleVersion = "${Mule_Runtime}"
     workers = "${CloudHub_Workers}"
     wSize = "${Worker_Size}"
