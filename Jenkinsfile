@@ -1,14 +1,13 @@
-pipeline {
+
+	pipeline {
   agent any
   tools { 
         maven 'maven-3.6.3'
         jdk 'jdk8' 
   }
 	environment {
-                    USER_CREDENTIALS = credentials('AnypointExchangeID'),
-		    version = "${env.API_Version}",
-		    env = "${env.Environment}"
-		   
+                    USER_CREDENTIALS = credentials('AnypointExchangeID')
+		    version = "${env.API_Version}"		   
        // muleEnv = "${env.cloudhub_env.toLowerCase()}"
       }
   stages {
