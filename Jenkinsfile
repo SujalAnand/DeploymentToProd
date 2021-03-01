@@ -17,12 +17,10 @@ pipeline {
   stages {
     stage('Initialize') {
       steps {
-        bat ''
-        '
-        echo % PATH %
-          echo % M2_HOME %
-          ''
-        ' 
+        bat '''
+				echo % PATH %
+				echo % M2_HOME %
+            ''' 
       }
     }
 
