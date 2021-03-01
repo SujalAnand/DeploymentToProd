@@ -5,8 +5,8 @@ pipeline {
         jdk 'jdk8' 
   }
 	environment {
-                    USER_CREDENTIALS = credentials('AnypointExchangeID')
-		    version = "${env.API_Version}"
+                    USER_CREDENTIALS = credentials('AnypointExchangeID'),
+		    version = "${env.API_Version}",
 		    env = "${env.Environment}"
 		   
        // muleEnv = "${env.cloudhub_env.toLowerCase()}"
