@@ -4,6 +4,11 @@ pipeline {
         maven 'maven-3.6.3'
         jdk 'jdk8' 
   }
+  environment {
+            USER_CREDENTIALS = credentials('AnypointExchangeID')
+			version = "${env.api_version}"
+       // muleEnv = "${env.cloudhub_env.toLowerCase()}"
+      }
   stages {
     stage ('Initialize') {
             steps {
@@ -13,36 +18,22 @@ pipeline {
                 ''' 
        }
     }
-    stage('Regression Testing') {
-      steps {
-	    echo "~~~~~~~Running Postman Scripts~~~~~~~~~"
-        bat '"C:\\Users\\Administrator\\AppData\\Roaming\\npm\\"newman run "C:\\Users\\Administrator\\Desktop\\Postman_Collection\\CI-CD-GetFlights-Jenkins.postman_collection.json"  -r htmlextra --reporter-htmlextra-export "C:\\Users\\Administrator\\Desktop\\Postman_Collection" --reporter-htmlextra-darkTheme'
-      }
-    }
-	
-	stage('Release Jar to Jfrog') {
-      steps {
-	    echo "~~~~~~~Cutting a release in git as well as in Jfrog~~~~~~~~~"
-		//bat 'mvn release:clean release:prepare release:perform -DskipStaging=true'
-      }
-    }
 	
 	stage('Download Jar from Jfrog') {
       steps {
+		
 	    echo "~~~~~~~Copying Jar From Jfrog~~~~~~~~~"
-        bat 'mvn dependency:copy -Dartifact="com.mycompany:ci-cd-jenkins-mule:1.0.0:jar:mule-application" -DoutputDirectory="C:\\Users\\Administrator\\Desktop\\Jar"'
+		echo version
+       // bat 'mvn dependency:copy -Dartifact="com.mycompany:ci-cd-jenkins-mule:1.0.0:jar:mule-application" -DoutputDirectory="C:\\Users\\Administrator\\Desktop\\Jar"'
       }
     }
 	stage('Deploying To Production') {
-	environment {
-            USER_CREDENTIALS = credentials('AnypointExchangeID')
-       // muleEnv = "${env.cloudhub_env.toLowerCase()}"
-      }
+	
       steps {
 	    echo "~~~~~~~Deployment to Production Environment~~~~~~~~~"
-            bat '"C:\\Users\\Administrator\\AppData\\Roaming\\npm\\"anypoint-cli --username=%USER_CREDENTIALS_USR% --password=%USER_CREDENTIALS_PSW% runtime-mgr cloudhub-application deploy --environment "Sandbox" --runtime "4.3.0" --workers "1" --workerSize "0.1" --region "us-east-1" "Prod-ci-cd-demo-project" "C:\\Users\\Administrator\\Desktop\\Jar\\ci-cd-jenkins-mule-1.0.0-mule-application.jar" --property "mule.env:dev"'
+           // bat '"C:\\Users\\Administrator\\AppData\\Roaming\\npm\\"anypoint-cli --username=%USER_CREDENTIALS_USR% --password=%USER_CREDENTIALS_PSW% runtime-mgr cloudhub-application deploy --environment "Sandbox" --runtime "4.3.0" --workers "1" --workerSize "0.1" --region "us-east-1" "Prod-ci-cd-demo-project" "C:\\Users\\Administrator\\Desktop\\Jar\\ci-cd-jenkins-mule-1.0.0-mule-application.jar" --property "mule.env:dev"'
 	    echo "~~~~~~~Describing the status Of API Deployed~~~~~~~~~"
-            bat '"C:\\Users\\Administrator\\AppData\\Roaming\\npm\\"anypoint-cli --username=%USER_CREDENTIALS_USR% --password=%USER_CREDENTIALS_PSW% runtime-mgr cloudhub-application describe --environment "Sandbox" Prod-ci-cd-demo-project'
+            //bat '"C:\\Users\\Administrator\\AppData\\Roaming\\npm\\"anypoint-cli --username=%USER_CREDENTIALS_USR% --password=%USER_CREDENTIALS_PSW% runtime-mgr cloudhub-application describe --environment "Sandbox" Prod-ci-cd-demo-project'
 	  }
     }
   }
