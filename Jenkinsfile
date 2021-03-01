@@ -33,10 +33,10 @@ pipeline {
 
       post {
         success {
-          echo "...Download from Artifactory Succeeded for ${env.BUILD_VERSION}: ${currentBuild.currentResult}"
+          echo "...Download from Artifactory Succeeded for ${env.BUILD_NUMBER}: ${currentBuild.currentResult}"
         }
         failure {
-          echo "...Download from Artifactory Failed for ${env.BUILD_VERSION}: ${currentBuild.currentResult}"
+          echo "...Download from Artifactory Failed for ${env.BUILD_NUMBER}: ${currentBuild.currentResult}"
         }
       }
 
