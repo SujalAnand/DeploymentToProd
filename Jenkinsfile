@@ -19,8 +19,8 @@ pipeline {
     stage('Initialize') {
       steps {
         bat '''
-		echo %PATH%
-		echo %M2_HOME%
+		echo "%PATH%"
+		echo "%M2_HOME%"
             ''' 
       }
     }
