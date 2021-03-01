@@ -8,11 +8,6 @@ pipeline {
     USER_CREDENTIALS = credentials('AnypointExchangeID')
     version = "${env.API_Version}"
     env = "${env.Environment}"
- 
-    workers = "${env.CloudHub_Workers}"
-    wSize = "${env.Worker_Size}"
-    region = "${env.CloudHub_Region}"
-    //muleEnv = "${env.Cloudhub_Env.toLowerCase()}"
   }
   stages {
     stage('Initialize') {
