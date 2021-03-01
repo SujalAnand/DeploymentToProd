@@ -12,7 +12,7 @@ pipeline {
     workers = "${env.CloudHub_Workers}"
     wSize = "${env.Worker_Size}"
     region = "${env.CloudHub_Region}"
-    muleEnv = "${env.Cloudhub_Env.toLowerCase()}"
+    //muleEnv = "${env.Cloudhub_Env.toLowerCase()}"
   }
   stages {
     stage('Initialize') {
