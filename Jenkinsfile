@@ -6,6 +6,7 @@ pipeline {
   }
 	environment {
             USER_CREDENTIALS = credentials('AnypointExchangeID')
+		version = "${env.API_Version}"
        // muleEnv = "${env.cloudhub_env.toLowerCase()}"
       }
   stages {
